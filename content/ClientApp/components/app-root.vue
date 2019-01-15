@@ -16,11 +16,12 @@
 
     export default {
       components: {
-        'nav-menu': NavMenu
+        'nav-menu': NavMenu,
       },
 
       data () {
-        return {}
+        return {
+        }
       }
     }
 </script>
