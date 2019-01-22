@@ -9,59 +9,33 @@ using Newtonsoft.Json;
 
 namespace Ledger.DataObjects {
     public class Account {
-        public int AccountId { get; set; }
-        public decimal InitialAccountBalance { get; set; }
-        public DateTime Commence { get; set; }
-        public DateTime Cease { get; set; }
-        public string AccountName { get; set;}
-
-        // TODO: Data formatting should not be contained here.
-        // Consider a script to reformat at the end or how to do it at hte control level
-        public string Commence_Formatted
-        { 
-            get { return Commence.ToString("dd-MMM-yyyy"); }            
-        }
-
-        public string Cease_Formatted
-        { 
-            get 
-            { 
-                if (Cease >= new DateTime(9999,12,31)) {
-                    return "";
-                } else {
-                    return Cease.ToString("dd-MMM-yyyy"); 
-                }            
-            }            
-        }
-        
-        public Boolean IsValid (DateTime dtmCheck) {
-            return (dtmCheck >= Commence && dtmCheck <= Cease);
-        }
+        public int accountId { get; set; }
+        public decimal initialBalance { get; set; }
+        public DateTime commence { get; set; }
+        public DateTime cease { get; set; }
+        public string accountName { get; set; }
 
         [JsonIgnore]
+        public String cease_string { get; set; }
+        public String commence_string { get; set; }
+        
+        public Boolean IsValid (DateTime dtmCheck) {
+            return (dtmCheck >= commence && dtmCheck <= cease);
+        }
+
         private AppDb Db { get; set; }
         public Account (AppDb db = null) {
             Db = db;
         }
 
-        private void BindId(MySqlCommand cmd)
-        {
-            cmd.Parameters.Add(new MySqlParameter
-            {
-                ParameterName = "@accountId",
-                DbType = DbType.Int32,
-                Value = AccountId,
-            });
+        public void SetDatesFromStrings () {
+            commence = DateTime.Parse (commence_string);
+            cease = DateTime.Parse (cease_string);
         }
 
-        private void BindParams(MySqlCommand cmd)
-        {
-            cmd.Parameters.Add(new MySqlParameter
-            {
-                ParameterName = "@accountName",
-                DbType = DbType.String,
-                Value = AccountName,
-            });
+        public void SetStringsFromDates () {
+            commence_string = commence.ToString ("yyyy-MM-dd");
+            cease_string = cease.ToString ("yyyy-MM-dd");
         }
     }
 }

@@ -36,18 +36,18 @@ namespace Ledger.DataObjects {
             return result.Count > 0 ? result[0] : null;
         }
 
-        public async Task<Boolean> AddAccount (string name, string commence, string cease, double initialBalance) {
+        public async Task<Boolean> AddAccount (string name, string commence, string cease, decimal initialBalance) {
             var cmd = Db.Connection.CreateCommand () as MySqlCommand;
             cmd.CommandText = @"insert into accounts (name, commence, cease, initialBalance) values(@name, @commence, @cease, @initialBalance)";
             AddParameter(cmd, @"name", DbType.String, name);
-            AddParameter(cmd, @"commence", DbType.Date, DateTime.Parse(commence));
-            AddParameter(cmd, @"cease", DbType.Date, DateTime.Parse(cease));
+            AddParameter(cmd, @"commence", DbType.Date, commence);
+            AddParameter(cmd, @"cease", DbType.Date, cease);
             AddParameter(cmd, @"initialBalance", DbType.Double, Math.Round(initialBalance, 2));
             await cmd.ExecuteReaderAsync ();
             return true;
         }
 
-        public async Task<Boolean> UpdateAccount (Int32 accountid, string name, string commence, string cease, double initialBalance) {
+        public async Task<Boolean> UpdateAccount (Int32 accountid, string name, string commence, string cease, decimal initialBalance) {
             var cmd = Db.Connection.CreateCommand () as MySqlCommand;
             cmd.CommandText = @"update accounts set commence=@commence, cease=@cease, name=@name, initialBalance=@initialBalance where accountId=@accountid";
             AddParameter(cmd, @"accountid", DbType.Int32, accountid);
@@ -64,11 +64,11 @@ namespace Ledger.DataObjects {
             using (reader) {
                 while (await reader.ReadAsync ()) {
                     var post = new Account (Db) {
-                        AccountId = await reader.GetFieldValueAsync<int> (0),
-                        AccountName = await reader.GetFieldValueAsync<string> (3),
-                        Commence = await reader.GetFieldValueAsync<DateTime> (1),
-                        Cease = await reader.GetFieldValueAsync<DateTime> (2),
-                        InitialAccountBalance = await reader.GetFieldValueAsync<decimal> (4)
+                        accountId = await reader.GetFieldValueAsync<int> (0),
+                        accountName = await reader.GetFieldValueAsync<string> (3),
+                        commence = await reader.GetFieldValueAsync<DateTime> (1),
+                        cease = await reader.GetFieldValueAsync<DateTime> (2),
+                        initialBalance = await reader.GetFieldValueAsync<decimal> (4)
                     };
                     accounts.Add (post);
                 }

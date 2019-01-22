@@ -1,55 +1,46 @@
 <script>
-import modal from "./account-detail";
+import journalmodal from "./journal-detail";
 import formatting from "../libraries/formatting";
 
 export default {
   mixins: [formatting],
 
   components: {
-    modal: modal
+    modal: journalmodal
   },
 
   data() {
     return {
-      accountlist: []
+      journallist: []
     };
   },
 
   methods: {
     async loadPage() {
       try {
-        let response = await this.$http.get(`/api/AccountList/AccountsList`);
-        //console.log(response.data);
-        this.accountlist = response.data;
+        let response = await this.$http.get(`/api/JournalList/JournalEntries`);
+        console.log(response.data);
+        this.journallist = response.data;
         var par = this;
-        this.accountlist.forEach(function(act) {
-          (act.commence_Formatted = function() {
-            return par.formatDate(act.commence);
-          }),
-            (act.cease_Formatted = function() {
-              return par.formatDate(act.cease);
-            });
-          act.active = function() {
-            return par.isActive(act.commence, act.cease);
-          };
+        this.journallist.forEach(function(jnl) {
+          jnl.journalDate_Formatted = par.formatDate(jnl.journalDate);
         });
-        console.log(this.accountlist);
       } catch (err) {
         window.alert(err);
         console.log(err);
       }
     },
 
-    addAccount() {
-      this.$refs.modal.modalAddAccount();
+    addJournal() {
+      this.$refs.modal.modalAddJournal();
     },
 
-    viewAccount(id) {
+    viewJournal(id) {
       console.log(`Call viewAccount for account ${id}`);
       if (id == null || id <= 0) {
         alert("ID not set!");
       } else {
-        this.$refs.modal.getAccount(id, false);
+        this.$refs.modal.getJournal(id, false);
       }
     },
 
@@ -67,37 +58,36 @@ export default {
 
 <template>
   <div>
-    <h1>Accounts Management</h1>
+    <h1>Journal Entries</h1>
 
-    <span v-if="accountlist">
+    <span v-if="journallist">
       <div class="headerbuttons">
-        <button type="button" class="btn" @click="addAccount">Add Account</button>
+        <button type="button" class="btn" @click="addJournal">Add Journal Entry</button>
       </div>
 
       <modal @closeModal="closeModal" @closeModalWithRefresh="closeModalWithRefresh" ref="modal"></modal>
-
       <table class="table">
         <thead>
           <tr>
             <!--<th/>-->
             <th>ID</th>
-            <th>Name</th>
-            <th>Commenced</th>
-            <th>Ceased</th>
+            <th>Reference Name</th>
+            <th>Date</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="account in accountlist" :key="account.accountId">
+          <tr v-for="journal in journallist" :key="journal.journalId">
             <!--<td><font-awesome-icon icon="edit"/></td>-->
-            <td>{{ account.accountId }}</td>
+            <td>{{ journal.journalId }}</td>
             <td>
               <a
-                class="accountlink"
-                @click="viewAccount(account.accountId)"
-              >{{ account.accountName }}</a>
+                class="journalLink"
+                @click="viewJournal(journal.journalId)"
+              >{{ journal.journalName}}</a>
             </td>
-            <td>{{ account.commence_Formatted() }}</td>
-            <td>{{ account.cease_Formatted() }}</td>
+            <td>{{ journal.journalDate_Formatted }}</td>
+            <td>{{ journal.journalAmount }}</td>
           </tr>
         </tbody>
       </table>
@@ -121,7 +111,7 @@ export default {
   padding-bottom: 10px;
 }
 
-a.accountlink {
+a.journalLink {
   color: #4aae9b !important;
 }
 </style>
