@@ -67,10 +67,9 @@ export default {
 
 <template>
   <div>
-    <h1>Accounts Management</h1>
-
     <span v-if="accountlist">
-      <div class="headerbuttons">
+      <div class="header">
+        <h1 class="ttl">Accounts Management</h1>
         <button type="button" class="btn" @click="addAccount">Add Account</button>
       </div>
 
@@ -79,7 +78,6 @@ export default {
       <table class="table">
         <thead>
           <tr>
-            <!--<th/>-->
             <th>ID</th>
             <th>Name</th>
             <th>Commenced</th>
@@ -88,14 +86,8 @@ export default {
         </thead>
         <tbody>
           <tr v-for="account in accountlist" :key="account.accountId">
-            <!--<td><font-awesome-icon icon="edit"/></td>-->
             <td>{{ account.accountId }}</td>
-            <td>
-              <a
-                class="accountlink"
-                @click="viewAccount(account.accountId)"
-              >{{ account.accountName }}</a>
-            </td>
+            <td> <a class="internalLink" @click="viewAccount(account.accountId)" >{{ account.accountName }}</a></td>
             <td>{{ account.commence_Formatted() }}</td>
             <td>{{ account.cease_Formatted() }}</td>
           </tr>
@@ -109,19 +101,5 @@ export default {
 </template>
 
 <style>
-.btn {
-  color: white;
-  background: #4aae9b;
-  border: 1px solid #4aae9b;
-  border-radius: 2px;
-}
 
-.headerbuttons {
-  padding-top: 5px;
-  padding-bottom: 10px;
-}
-
-a.accountlink {
-  color: #4aae9b !important;
-}
 </style>

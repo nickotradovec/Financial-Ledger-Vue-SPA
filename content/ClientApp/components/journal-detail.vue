@@ -1,5 +1,6 @@
 <script>
 import formatting from "../libraries/formatting";
+//import FontAwesomeIcon from '../icons.js'
 
 export default {
   name: "journalmodal",
@@ -15,9 +16,12 @@ export default {
     },
     accountsNV: function() {
       var actsNV = [];
-      var i;
-      for (i = 0; i < this.accounts.length; i+=1) {
-        actsNV.push({value: this.accounts[i].accountId, text: this.accounts[i].accountName})
+      //var i;
+      for (var i = 0; i < this.accounts.length; i += 1) {
+        actsNV.push({
+          value: this.accounts[i].accountId,
+          text: this.accounts[i].accountName
+        });
       }
       return actsNV;
     }
@@ -43,18 +47,15 @@ export default {
     // Click events
     close() {
       console.log("Close event raised.");
-      this.reset();
-      this.mode = 0;
-    },
-
+      this.reset(); },
     change() {
       console.log("change event raised.");
-      this.mode = 2;
-    },
-
+      this.mode = 2; },
+    cancel() { 
+      if ( this.journalId >= 0 ) { this.getJournal(this.journalId, false); }
+      else { this.reset(); } },
     modalAddJournal() {
-      this.mode = 3;
-    },
+      this.mode = 3; },
 
     save() {
       console.log(`Save event raised from mode: ${this.mode.toString()}`);
@@ -102,9 +103,10 @@ export default {
         this.journalDate = this.dataDate(response.data.journalDate);
         this.journalAmount = response.data.journalAmount;
         this.comment = response.data.comment;
+        this.credits = [];
+        this.debits = [];
 
-        var i;
-        for (i = 0; i < response.data.details.length; i++) {
+        for (var i = 0; i < response.data.details.length; i++) {
           if (response.data.details[i].debitCredit == "D") {
             this.debits.push({
               accountId: response.data.details[i].account.accountId,
@@ -157,11 +159,24 @@ export default {
       try {
         let response = await this.$http.get(`/api/AccountList/AccountsList`);
         console.log(response);
-        this.accounts = response.data
+        this.accounts = response.data;
       } catch (err) {
         window.alert(err);
         console.log(err);
       }
+    },
+
+    addCredit() {
+      this.credits.push({ accountId: 0, amount: 0 });
+    },
+    deleteCredit(index) {
+      this.credits.splice(index, 1);
+    },
+    addDebit() {
+      this.debits.push({ accountId: 0, amount: 0 });
+    },
+    deleteDebit(index) {
+      this.debits.splice(index, 1);
     },
 
     validate() {
@@ -182,7 +197,7 @@ export default {
     <transition name="modal-fade">
       <div class="modal-backdrop">
         <div
-          class="modaldetail"
+          class="modaldetailjournal"
           role="dialog"
           aria-labelledby="modalTitle"
           aria-describedby="modalDescription"
@@ -205,10 +220,7 @@ export default {
               </ul>
             </div>
 
-              <b-form-select v-model="deletetest" :options="accountsNV" class="mb-3" />
-
             <div class="inputElement">
-              <span v-if="journalId>=0">
                 <label for="journalId">Journal Id</label>
                 <input
                   type="number"
@@ -217,7 +229,6 @@ export default {
                   id="journalId"
                   disabled="true"
                 >
-              </span>
             </div>
 
             <div class="inputElement">
@@ -256,53 +267,59 @@ export default {
 
           <div class="dcrow">
             <div class="column" id="debits">
-              <h4>Debits</h4>
+              <div class="header">
+                <h4>Debits</h4>
+                <button v-if="!isReadOnly" v-on:click="addDebit" style="margin-right:10px">Add</button>
+              </div>
               <table class="table">
                 <thead>
                   <tr>
-                    <th>Id</th>
+                    <th v-if="!isReadOnly">  </th>
                     <th>Account Name</th>
-                    <th style="text-align:right">Amount</th>
+                    <th class="tableamount">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="debit in debits" :key="debit.accountId">
-                    <td>{{debit.accountId}}</td>
-                    <td>{{debit.accountName}}</td>
-                    <!--<td>
-                    <b-dropdown id="acclist" text="Select Account" class="m-md-2">
-                      <b-dropdown-item>Test1</b-dropdown-item>
-                      <b-dropdown-item>Test2</b-dropdown-item>
-                    </b-dropdown>
-                    </td>-->
-                    <td style="text-align:right">{{debit.amount}}</td>
+                  <tr v-for="(debit, index) in debits" :key="debit.accountId" style="line-height:1; margin:0">
+                    <td v-if="!isReadOnly"><icon icon="trash" v-on:click="deleteDebit(index)" style="margin-top:5px !important;"/></td>
+                    <b-form-select
+                      v-model="debit.accountId"
+                      :options="accountsNV"
+                      class="mb-3"
+                      size="sm"
+                      style="margin-top:10px"
+                      :disabled="isReadOnly"
+                    />
+                    <td><input type="number" class="inputAmount" v-model="debit.amount" :disabled="isReadOnly"/></td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="column" id="credits">
-              <h4>Credits</h4>
+              <div class="header">
+                <h4>Credits</h4>
+                <button v-if="!isReadOnly" v-on:click="addCredit" style="margin-right:10px">Add</button>
+              </div>
               <table class="table">
                 <thead>
                   <tr>
-                    <!--<th>Id</th>-->
+                    <th v-if="!isReadOnly">  </th>
                     <th>Account Name</th>
-                    <th style="text-align:right">Amount</th>
+                    <th class="tableamount">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="credit in credits" :key="credit.accountId">
-                    <!--<td>{{credit.accountId}}</td>
-                    <td>{{credit.accountName}}</td>-->
-                    <b-form-select v-bind="credit.accountId" :options="accountsNV" class="mb-3" size="sm"/>
-                    <td>
-                      <input
-                        type="number"
-                        v-bind="credit.amount"
-                        :disabled="isReadOnly"
-                        id="amount"
-                      >
-                    </td>
+                  <tr v-for="(credit, index) in credits" :key="credit.accountId" style="line-height:1; margin:0">
+                    <td v-if="!isReadOnly"><icon icon="trash" v-on:click="deleteCredit(index)" style="margin-top:5px !important;"/></td>
+                    <b-form-select
+                      v-model="credit.accountId"
+                      :options="accountsNV"
+                      class="mb-3"
+                      size="sm"
+                      style="margin-top:10px"
+                      :disabled="isReadOnly"
+                    />
+                    <td><input type="number" class="inputAmount" v-model="credit.amount" :disabled="isReadOnly"/></td>
                   </tr>
                 </tbody>
               </table>
@@ -311,12 +328,12 @@ export default {
 
           <footer class="modal-footer">
             <span v-if="isReadOnly">
-              <button type="button" class="btn-green" @click="change" aria-label="Change">Change</button>
               <button type="button" class="btn-green" @click="close" aria-label="Close">Close</button>
+              <button type="button" class="btn-green" @click="change" aria-label="Change">Change</button>         
             </span>
             <span v-else>
+              <button type="button" class="btn-green" @click="cancel" aria-label="Cancel">Cancel</button>
               <button type="button" class="btn-green" @click="save" aria-label="Save">Save</button>
-              <button type="button" class="btn-green" @click="close" aria-label="Change">Cancel</button>
             </span>
           </footer>
         </div>
@@ -325,61 +342,16 @@ export default {
   </span>
 </template>
 <style>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.modaldetail {
-  background: #ffffff;
-  box-shadow: 2px 2px 20px 1px;
-  overflow-x: auto;
-  display: flex;
-  width: 800px;
-  height: flex;
-  flex-direction: column;
-}
-
-.modal-header,
-.modal-footer {
-  padding: 15px;
-  display: flex;
-}
-
-.modal-header {
-  border-bottom: 1px solid #eeeeee;
-  color: #4aae9b;
-  justify-content: space-between;
-}
-
-.modal-footer {
-  border-top: 1px solid #eeeeee;
-  justify-content: flex-end;
-}
-
-.modal-body {
-  position: relative;
-  padding: 20px 10px;
-}
-
-.btn-green {
-  color: white;
-  background: #4aae9b;
-  border: 1px solid #4aae9b;
-  border-radius: 2px;
-}
-
-input {
-  float: right;
-  width: 50%;
-  text-align: right;
+.modaldetailjournal {
+background: #ffffff;
+box-shadow: 2px 2px 20px 1px;
+overflow-x: auto;
+display: flex;
+height: flex;
+flex-direction: column;
+width: 800px !important;
+max-height: 80%;
 }
 
 .dcrow {
@@ -396,4 +368,15 @@ input {
   padding-top: 4px;
 }
 
+@media screen and (max-width: 800px) {
+  .modaldetail {
+    width: 100% !important;
+  }
+  .column {
+    width: 100%;
+  }
+  .dcrow {
+    width: 100%;
+  }
+}
 </style>

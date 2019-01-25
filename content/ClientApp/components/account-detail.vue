@@ -30,21 +30,17 @@ export default {
 
   methods: {
     // Click events
-    close() {
-      console.log("Close event raised.");
-      this.reset();
-      this.mode = 0;
-    },
-
-    change() {
-      console.log("change event raised.");
-      this.mode = 2;
-    },
-
-    modalAddAccount() {
-      this.commence = new Date();
-      this.mode = 3;
-    },
+    close() { 
+      this.reset(); 
+      this.mode = 0; },
+    change() { 
+      this.mode = 2; },
+    cancel() { 
+      if ( this.accountId >= 0 ) { this.getAccount(this.accountId, false); }
+      else { this.reset(); } },
+    modalAddAccount() { 
+      this.commence = new Date(); 
+      this.mode = 3; },
 
     save() {
       console.log(`Save event raised from mode: ${this.mode.toString()}`);
@@ -162,14 +158,14 @@ export default {
 
             <div class="inputElement">
               <span v-if="accountId>=0">
-                <label for="accountId">Account Id</label>
-                <input
-                  type="number"
-                  v-model="accountId"
-                  placeholder="Account Id"
-                  id="accountId"
-                  disabled="true"
-                >
+              <label for="accountId">Account Id</label>
+              <input
+                type="number"
+                v-model="accountId"
+                placeholder="Account Id"
+                id="accountId"
+                disabled="true"
+              >
               </span>
             </div>
 
@@ -220,12 +216,12 @@ export default {
 
           <footer class="modal-footer">
             <span v-if="isReadOnly">
-              <button type="button" class="btn-green" @click="change" aria-label="Change">Change</button>
+              <button type="button" class="btn-green" @click="change" aria-label="Change">Change</button>              
               <button type="button" class="btn-green" @click="close" aria-label="Close">Close</button>
             </span>
             <span v-else>
-              <button type="button" class="btn-green" @click="save" aria-label="Save">Save</button>
-              <button type="button" class="btn-green" @click="close" aria-label="Change">Cancel</button>
+               <button type="button" class="btn-green" @click="save" aria-label="Save">Save</button>               
+              <button type="button" class="btn-green" @click="cancel" aria-label="Cancel">Cancel</button>       
             </span>
           </footer>
         </div>
@@ -234,61 +230,15 @@ export default {
   </span>
 </template>
 <style>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .modaldetail {
   background: #ffffff;
   box-shadow: 2px 2px 20px 1px;
   overflow-x: auto;
   display: flex;
-  width: 400px;
   height: flex;
   flex-direction: column;
-}
-
-.modal-header,
-.modal-footer {
-  padding: 15px;
-  display: flex;
-}
-
-.modal-header {
-  border-bottom: 1px solid #eeeeee;
-  color: #4aae9b;
-  justify-content: space-between;
-}
-
-.modal-footer {
-  border-top: 1px solid #eeeeee;
-  justify-content: flex-end;
-}
-
-.modal-body {
-  position: relative;
-  padding: 20px 10px;
-}
-
-.btn-green {
-  color: white;
-  background: #4aae9b;
-  border: 1px solid #4aae9b;
-  border-radius: 2px;
-}
-
-input {
-  float: right;
-  width: 50%;
-  text-align: right;
+  width: 400px !important;
 }
 
 </style>

@@ -58,36 +58,27 @@ export default {
 
 <template>
   <div>
-    <h1>Journal Entries</h1>
-
     <span v-if="journallist">
-      <div class="headerbuttons">
+      <div class="header">
+        <h1>Journal Entries</h1>
         <button type="button" class="btn" @click="addJournal">Add Journal Entry</button>
-      </div>
-
       <modal @closeModal="closeModal" @closeModalWithRefresh="closeModalWithRefresh" ref="modal"></modal>
+      </div>     
       <table class="table">
         <thead>
           <tr>
-            <!--<th/>-->
             <th>ID</th>
             <th>Reference Name</th>
             <th>Date</th>
-            <th>Amount</th>
+            <th class="tableAmount">Amount</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="journal in journallist" :key="journal.journalId">
-            <!--<td><font-awesome-icon icon="edit"/></td>-->
             <td>{{ journal.journalId }}</td>
-            <td>
-              <a
-                class="journalLink"
-                @click="viewJournal(journal.journalId)"
-              >{{ journal.journalName}}</a>
-            </td>
+            <td><a class="internalLink" @click="viewJournal(journal.journalId)">{{ journal.journalName}}</a></td>
             <td>{{ journal.journalDate_Formatted }}</td>
-            <td>{{ journal.journalAmount }}</td>
+            <td class="tableAmount">{{ journal.journalAmount }}</td>
           </tr>
         </tbody>
       </table>
@@ -99,19 +90,5 @@ export default {
 </template>
 
 <style>
-.btn {
-  color: white;
-  background: #4aae9b;
-  border: 1px solid #4aae9b;
-  border-radius: 2px;
-}
 
-.headerbuttons {
-  padding-top: 5px;
-  padding-bottom: 10px;
-}
-
-a.journalLink {
-  color: #4aae9b !important;
-}
 </style>

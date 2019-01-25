@@ -28,6 +28,84 @@
     z-index: 1;
 }
 
+.tableAmount {
+    text-align: right !important;
+}
+
+.inputAmount {
+    text-align: right;
+}
+
+.inputElement {
+    display: inline-block;
+    width: 380px;
+  }
+  
+  .inputElement label {
+    float: left;
+  }
+  
+  .inputElement input {
+    float: right;
+  }
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.btn, button {
+    color: white;
+    background: #4aae9b;
+    border: 1px solid #4aae9b;
+    border-radius: 2px;
+    margin-left: 5px;
+  }
+
+.internalLink {
+    color: #4aae9b !important;
+}
+
+.header button {
+    float: right;
+    height: 80%;
+    margin-top: 1%;
+}
+
+.header h1, h2, h3, h4 {
+    margin-top: .3rem;
+    display: inline-block;
+}
+
+.modal-header {
+    padding-left: .5rem;
+    padding-bottom: 0rem;
+    padding-top: .3rem;
+    background: #4aae9b;
+    color: white;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.modal-footer {
+    padding: 15px;
+    display: flex;
+    border-top: 1px solid #eeeeee;
+    justify-content: flex-end;
+  }
+  
+  .modal-body {
+    position: relative;
+    padding: 20px 10px;
+  }
+
 @media (max-width: 767px) {
     /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */
     body {
